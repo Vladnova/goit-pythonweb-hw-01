@@ -1,13 +1,21 @@
 from abc import ABC, abstractmethod
 
+import logging
+
+logging.basicConfig(
+    format="%(asctime)s %(message)s",
+    level=logging.INFO,
+    handlers=[logging.StreamHandler()],
+)
+
 class Book:
-    def __init__(self, title:str, author: str, year: int):
+    def __init__(self, title: str, author: str, year: int):
         self.title = title
         self.author = author
         self.year = year
 
     def __str__(self):
-        return f'Title: {self.title}, Author {self.author}, Year {self.year}'
+        return f"Title: {self.title}, Author {self.author}, Year {self.year}"
 
 
 class LibraryInterface(ABC):
@@ -16,12 +24,13 @@ class LibraryInterface(ABC):
         pass
 
     @abstractmethod
-    def remove_book(self, title:str):
+    def remove_book(self, title: str):
         pass
 
     @abstractmethod
     def show_books(self):
         pass
+
 
 class Library(LibraryInterface):
     def __init__(self):
@@ -30,21 +39,22 @@ class Library(LibraryInterface):
     def add_book(self, book: Book):
         self.books.append(book)
 
-    def remove_book(self, title:str):
+    def remove_book(self, title: str):
         self.books = [book for book in self.books if book.title != title]
 
     def show_books(self):
         if not self.books:
-            print("Library is empty!")
+            logging.info("Library is empty!")
 
         for book in self.books:
-            print(book)
+            logging.info(book)
+
 
 class LibraryManager:
     def __init__(self, library: LibraryInterface):
         self.library = library
 
-    def add_book(self, title: str, author:str, year: int):
+    def add_book(self, title: str, author: str, year: int):
         book = Book(title, author, year)
         self.library.add_book(book)
 
@@ -67,7 +77,7 @@ def main():
                 title = input("Enter book title: ").strip()
                 author = input("Enter book author: ").strip()
                 year = input("Enter book year: ").strip()
-                manager.add_book(title, author, year)
+                manager.add_book(title, author, int(year))
             case "remove":
                 title = input("Enter book title to remove: ").strip()
                 manager.remove_book(title)
@@ -76,7 +86,8 @@ def main():
             case "exit":
                 break
             case _:
-                print("Invalid command. Please try again.")
+                logging.error("Invalid command. Please try again.")
+
 
 if __name__ == "__main__":
     main()
